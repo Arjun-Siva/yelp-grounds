@@ -33,6 +33,7 @@ router.put("/:id",middleware.checkCampgroundOwnership,function(req,res){
 });
 router.post("/",middleware.isLoggedIn,function(req,res){
 	var name=req.body.name;
+	var address = req.body.address;
 	var image=req.body.image;
 	var desc=req.body.description;
 	var author= {
@@ -42,6 +43,7 @@ router.post("/",middleware.isLoggedIn,function(req,res){
 	var cmpgrnd=new Campground(
     {
         name: name,
+		address: address,
         image: image,
 		description: desc,
 		author: author

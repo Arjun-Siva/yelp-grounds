@@ -3,6 +3,7 @@ var express		= require("express"),
 	bodyParser	= require("body-parser"),
 	mongoose 	= require('mongoose'),
 	Campground	= require("./models/campground"),
+	flash		= require("connect-flash"),
 	passport 	= require('passport'),
 	methodOverride = require('method-override'),
 	LocalStrategy = require('passport-local'),
@@ -10,6 +11,9 @@ var express		= require("express"),
 	User		= require('./models/user'),
 	seedDB		= require('./seeds');
 
+var commentRoutes = require("./routes/comments"),
+	campgroundRoutes = require("./routes/campgrounds"),
+	indexRoutes = require("./routes/index");
 
 mongoose.connect('mongodb+srv://arjun:siva@cluster0-qtiyg.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -26,7 +30,8 @@ db.once('open', function() {
 });
 
 //seedDB();
-
+app.use(methodOverride("_method"));
+app.use(flash());
 // PASSPORT CONFIG
 app.use(require("express-session")({
 		secret: "arjun is hot",
@@ -41,16 +46,19 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use(function(req,res,next){
 	res.locals.currentUser = req.user;
+	res.locals.error = req.flash("error");
+	res.locals.success = req.flash("success");
 	next();
 });
-app.use(methodOverride("_method"));
-var commentRoutes = require("./routes/comments"),
-	campgroundRoutes = require("./routes/campgrounds"),
-	indexRoutes = require("./routes/index");
+
+
+
 
 app.use("/",indexRoutes);
 app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments",commentRoutes);
+
+
 app.listen(3000,function(){
 	console.log("Yelpcamp started");
 });
